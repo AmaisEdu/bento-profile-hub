@@ -1,249 +1,102 @@
-import { useState, useCallback } from "react";
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  rectSortingStrategy,
-  arrayMove,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { Pencil, X, GripVertical } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight, Sparkles, Users, BookOpen, TrendingUp } from "lucide-react";
 
-import ProfileCard from "@/components/ProfileCard";
-import SocialLinkCard from "@/components/SocialLinkCard";
-import ContentShowcase from "@/components/ContentShowcase";
-import NewsletterCard from "@/components/NewsletterCard";
-import MapCard from "@/components/MapCard";
+const Index = () => {
+  const [slug, setSlug] = useState("");
+  const navigate = useNavigate();
 
-import avatarImg from "@/assets/avatar.jpg";
-import projectCover from "@/assets/project-cover.jpg";
-
-interface Widget {
-  id: string;
-  type: string;
-  size: "1x1" | "2x1" | "2x2";
-  content: Record<string, any>;
-}
-
-const initialWidgets: Widget[] = [
-  {
-    id: "profile",
-    type: "profile",
-    size: "2x2",
-    content: {
-      name: "Marina Costa",
-      bio: "Desenvolvedora full-stack apaixonada por criar experiências digitais que transformam negócios.",
-      avatarUrl: avatarImg,
-      tags: ["React", "TypeScript", "Figma", "Node.js"],
-    },
-  },
-  {
-    id: "instagram",
-    type: "social",
-    size: "1x1",
-    content: { platform: "instagram", url: "https://instagram.com" },
-  },
-  {
-    id: "linkedin",
-    type: "social",
-    size: "1x1",
-    content: { platform: "linkedin", url: "https://linkedin.com" },
-  },
-  {
-    id: "project",
-    type: "content",
-    size: "2x1",
-    content: {
-      title: "Dashboard Analytics — Projeto Recente",
-      imageUrl: projectCover,
-      url: "#",
-    },
-  },
-  {
-    id: "github",
-    type: "social",
-    size: "1x1",
-    content: { platform: "github", url: "https://github.com" },
-  },
-  {
-    id: "map",
-    type: "map",
-    size: "1x1",
-    content: { location: "São Paulo, BR" },
-  },
-  {
-    id: "newsletter",
-    type: "newsletter",
-    size: "2x1",
-    content: {},
-  },
-  {
-    id: "youtube",
-    type: "social",
-    size: "1x1",
-    content: { platform: "youtube", url: "https://youtube.com" },
-  },
-];
-
-const sizeClasses: Record<string, string> = {
-  "1x1": "col-span-1",
-  "2x1": "col-span-1 sm:col-span-2",
-  "2x2": "col-span-1 sm:col-span-2 row-span-2",
-};
-
-function SortableWidget({
-  widget,
-  index,
-  isEditing,
-}: {
-  widget: Widget;
-  index: number;
-  isEditing: boolean;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: widget.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  const delay = index * 80;
-
-  const renderWidget = () => {
-    switch (widget.type) {
-      case "profile":
-        return (
-          <ProfileCard
-            name={widget.content.name}
-            bio={widget.content.bio}
-            avatarUrl={widget.content.avatarUrl}
-            tags={widget.content.tags}
-            delay={delay}
-            isEditing={isEditing}
-          />
-        );
-      case "social":
-        return (
-          <SocialLinkCard
-            platform={widget.content.platform}
-            url={widget.content.url}
-            delay={delay}
-            isEditing={isEditing}
-          />
-        );
-      case "content":
-        return (
-          <ContentShowcase
-            title={widget.content.title}
-            imageUrl={widget.content.imageUrl}
-            url={widget.content.url}
-            delay={delay}
-            isEditing={isEditing}
-          />
-        );
-      case "newsletter":
-        return <NewsletterCard delay={delay} isEditing={isEditing} />;
-      case "map":
-        return <MapCard location={widget.content.location} delay={delay} isEditing={isEditing} />;
-      default:
-        return null;
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (slug.trim()) {
+      navigate(`/${slug.trim().toLowerCase().replace(/\s+/g, "-")}`);
     }
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`${sizeClasses[widget.size]} relative group`}
-    >
-      {isEditing && (
-        <div
-          {...attributes}
-          {...listeners}
-          className="absolute top-3 right-3 z-20 w-8 h-8 rounded-xl bg-secondary/80 backdrop-blur-sm flex items-center justify-center cursor-grab active:cursor-grabbing border border-border"
-        >
-          <GripVertical className="w-4 h-4 text-muted-foreground" />
-        </div>
-      )}
-      {renderWidget()}
-    </div>
-  );
-}
+    <div className="min-h-screen bg-[#F8F7FF] relative overflow-hidden">
+      {/* Gradient blobs */}
+      <div className="gradient-blob w-[500px] h-[500px] rounded-full bg-[#FF6B9D] top-[-150px] right-[-100px]" />
+      <div className="gradient-blob w-[400px] h-[400px] rounded-full bg-[#4FACFE] bottom-[-100px] left-[-100px]" />
+      <div className="gradient-blob w-[300px] h-[300px] rounded-full bg-[#C44DFF] top-[40%] left-[50%]" />
 
-const Index = () => {
-  const [widgets, setWidgets] = useState<Widget[]>(initialWidgets);
-  const [isEditing, setIsEditing] = useState(false);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
-  );
-
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event;
-      if (over && active.id !== over.id) {
-        setWidgets((items) => {
-          const oldIndex = items.findIndex((i) => i.id === active.id);
-          const newIndex = items.findIndex((i) => i.id === over.id);
-          return arrayMove(items, oldIndex, newIndex);
-        });
-      }
-    },
-    []
-  );
-
-  return (
-    <div className="min-h-screen bg-background bg-radial-glow">
-      <div className="container max-w-5xl py-8 px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <header className="flex items-center justify-between mb-8 stagger-in" style={{ animationDelay: "0ms" }}>
-          <h2 className="text-lg font-bold tracking-tight text-foreground">
+      <div className="relative z-10">
+        {/* Nav */}
+        <header className="max-w-5xl mx-auto px-4 py-5 flex items-center justify-between">
+          <h2 className="text-xl font-extrabold text-foreground">
             matricule<span className="text-primary">aqui</span>
           </h2>
+          <a href="/instituto-futuro" className="text-sm font-semibold text-primary hover:underline">
+            Ver demo →
+          </a>
         </header>
 
-        {/* Bento Grid */}
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-auto">
-              {widgets.map((widget, index) => (
-                <SortableWidget
-                  key={widget.id}
-                  widget={widget}
-                  index={index}
-                  isEditing={isEditing}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+        {/* Hero */}
+        <section className="max-w-3xl mx-auto px-4 pt-16 pb-20 text-center stagger-in">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-6">
+            <Sparkles className="w-3.5 h-3.5" />
+            Usado por +500 instituições em todo o Brasil
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight mb-5">
+            O link que <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, #FF6B9D, #C44DFF)" }}>matricula.</span>
+            <br />
+            Não só compartilha.
+          </h1>
+
+          <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10">
+            Crie sua página em minutos e transforme visitantes em alunos com formulários, agendamentos e vitrine de cursos.
+          </p>
+
+          <form onSubmit={handleCreate} className="flex items-center max-w-md mx-auto bg-card border border-border rounded-2xl p-1.5 shadow-lg">
+            <span className="text-sm text-muted-foreground pl-4 shrink-0 hidden sm:inline">matriculeaqui.com/</span>
+            <input
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              placeholder="nome-da-instituição"
+              className="flex-1 h-11 bg-transparent px-2 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none min-w-0"
+            />
+            <button type="submit" className="btn-gradient-primary flex items-center gap-2 text-sm shrink-0">
+              Criar página <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+        </section>
+
+        {/* Benefits */}
+        <section className="max-w-4xl mx-auto px-4 pb-24">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {[
+              { icon: Users, title: "Captar", desc: "Formulários inteligentes que captam leads direto na página.", gradient: "linear-gradient(135deg, #FF6B9D, #C44DFF)" },
+              { icon: BookOpen, title: "Engajar", desc: "Vitrine de cursos, vídeos e conteúdo que convence.", gradient: "linear-gradient(135deg, #FFD93D, #FF6B35)" },
+              { icon: TrendingUp, title: "Converter", desc: "CRM interno para gerenciar leads e agendar visitas.", gradient: "linear-gradient(135deg, #4FACFE, #00F2FE)" },
+            ].map((b) => (
+              <div key={b.title} className="block-card block-card-hover p-6 text-center flex flex-col items-center gap-4 stagger-in">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white" style={{ background: b.gradient }}>
+                  <b.icon className="w-7 h-7" />
+                </div>
+                <h3 className="text-lg font-bold text-foreground">{b.title}</h3>
+                <p className="text-sm text-muted-foreground">{b.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA Final */}
+        <section className="mx-4 mb-16 rounded-3xl p-10 text-center text-white" style={{ background: "linear-gradient(135deg, #6C3EFF, #C44DFF)" }}>
+          <h2 className="text-2xl sm:text-3xl font-extrabold mb-3">Comece agora, é grátis!</h2>
+          <p className="text-white/80 mb-6 text-sm max-w-md mx-auto">Monte sua página de captação em minutos e comece a receber leads hoje mesmo.</p>
+          <a href="#" className="inline-flex items-center gap-2 bg-white text-primary font-bold rounded-xl px-8 py-3.5 hover:-translate-y-1 transition-transform shadow-lg">
+            Criar minha página <ArrowRight className="w-4 h-4" />
+          </a>
+        </section>
 
         {/* Footer */}
-        <footer className="mt-12 text-center stagger-in" style={{ animationDelay: "800ms" }}>
+        <footer className="text-center pb-8">
           <p className="text-xs text-muted-foreground">
-            feito com 💜 por <span className="text-primary font-semibold">Amais</span>
+            © 2026 MatriculeAqui · Feito com 💜 por <span className="font-semibold text-primary">Amais</span>
           </p>
         </footer>
       </div>
-
-      {/* Edit FAB */}
-      <button
-        onClick={() => setIsEditing(!isEditing)}
-        className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 active:scale-95 ${
-          isEditing
-            ? "bg-destructive text-destructive-foreground"
-            : "bg-primary text-primary-foreground"
-        }`}
-      >
-        {isEditing ? <X className="w-6 h-6" /> : <Pencil className="w-5 h-5" />}
-      </button>
     </div>
   );
 };
