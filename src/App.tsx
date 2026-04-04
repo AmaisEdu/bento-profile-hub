@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import InstitutionPage from "./pages/InstitutionPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import BlockShowcase from "./pages/BlockShowcase.tsx";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/blocos" element={<BlockShowcase />} />
           <Route path="/:slug" element={<InstitutionPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
