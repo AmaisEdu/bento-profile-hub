@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import InstitutionPage from "./pages/InstitutionPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import BlockShowcase from "./pages/BlockShowcase.tsx";
+import WidgetEditorShowcase from "./pages/WidgetEditorShowcase.tsx";
 
 const queryClient = new QueryClient();
 
